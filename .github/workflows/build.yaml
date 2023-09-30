@@ -2,7 +2,7 @@ name: Build Image
 
 env:
   REGISTRY: ghcr.io
-  REPOSITORY_NAME: example-container-app
+  REPOSITORY_NAME: example-container-app/app
 
 on:
   push:
