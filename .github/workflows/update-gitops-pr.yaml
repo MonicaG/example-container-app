@@ -87,7 +87,7 @@ jobs:
           -B main \
           -H $BRANCH_NAME \
           --title 'Automated updates' \
-          --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' \
+          --body 'Automated update by Github workflow in ${{ github.repository }} for PR ${{ github.repository }}#${{ github.event.pull_request.number }} ' \
           --assignee MonicaG \
           --label 'preview'
         # env:
