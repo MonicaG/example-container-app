@@ -1,4 +1,4 @@
-name: Build Image
+name: Build and update gitops repo
 
 env:
   TARGET_FILE: 'values.yaml'
