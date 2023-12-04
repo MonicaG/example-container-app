@@ -83,7 +83,7 @@ jobs:
           fi
       
       - name: Create PR
-        if: !(steps.check_pr.outputs.EXISTS)
+        if: '!(steps.check_pr.outputs.EXISTS)'
         run: |
           gh pr create -B main -H $BRANCH_NAME --title 'Automated updates' --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' --assignee MonicaG --label 'preview'
         env:
