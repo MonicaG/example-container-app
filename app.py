@@ -12,6 +12,10 @@ def index():
 def hello():
     return '<h1><center>Hello!</center></h1>'
 
+@app.route('/bye')
+def hello():
+    return '<h1><center>GoodBye!</center></h1>'
+
 @app.route('/test')
 def test():
     word = environ.get("APP_WORD")
