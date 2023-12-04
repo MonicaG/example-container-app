@@ -1,0 +1,89 @@
+name: Build and update gitops repo
+
+env:
+  TARGET_FILE: 'values.pr.yaml'
+  WORKING_DIR: 'chart'
+  YAML_PROPERTY_PATH: '.image.tag'
+  GITOPS_REPO: 'MonicaG/example-container-app-gitops'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    branches: [ "main" ]
+  
+jobs:
+  call-build-workflow:
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
+    uses: ./.github/workflows/build.yaml
+    
+  update-gitops-pr-file:
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
+    runs-on: ubuntu-latest
+    needs: call-build-workflow
+    env:
+      BRANCH_NAME: 'auto-updates-${{ github.event.pull_request.number }}'
+
+    steps:
+      - name: Setup gitops repo access
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}  
+
+      - name: Checkout CD repo
+        uses: actions/checkout@v4   
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+
+      # This assumes that sha was used as a tag in the above job 
+      # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
+      # of tags returned from metadata-action and using github.sha
+      - name: Get short sha
+        run: echo "GITHUB_SHA_SHORT="sha-"$(echo ${{ github.sha }} | cut -c -7)" >> $GITHUB_ENV
+
+      - name: 'Configure git'
+      # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: 'Create or checkout branch'
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME        
+
+      - name: Update image tag
+        run: |
+          cd ${{ env.WORKING_DIR }}
+          yq -i '${{ env.YAML_PROPERTY_PATH }} = "${{ env.GITHUB_SHA_SHORT }}"' ${{ env.TARGET_FILE }}
+    
+      - name: Commit and push update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update image tag for dev"
+          git push origin
+
+      - name: Check if PR existds
+        id: check-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr=$(gh pr list \
+              --repo ${{ env.GITOPS_REPO }} \
+              --head ${{ env.BRANCH_NAME }} \ 
+              --base 'main' \
+              --json number \
+              --jq 'length')
+          if ((pr > 0)); then
+              echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+          fi
+      
+      - name: Create PR
+        if: !steps.check-pr.outputs.EXISTS
+        run: |
+          gh pr create -B main -H $BRANCH_NAME --title 'Automated updates' --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' --assignee MonicaG --label 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
