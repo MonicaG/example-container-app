@@ -1,0 +1,49 @@
+name: Build Image
+
+env:
+  TARGET_FILE: 'values.yaml'
+  WORKING_DIR: 'chart'
+  YAML_PROPERTY_PATH: '.image.tag'
+
+on:
+  push:
+    paths-ignore:
+        - 'README.md'
+    branches: [ "main" ]
+  workflow_dispatch:
+    
+jobs:
+  call-build-workflow:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: MonicaG/example-container-app/.github/workflows/build.yaml@v1
+    
+  update-gitops-file:
+    runs-on: ubuntu-latest
+    needs: call-build-workflow
+
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4   
+        with:
+          repository: MonicaG/example-container-app-gitops
+
+      # This assumes that sha was used as a tag in the above job 
+      # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
+      # of tags returned from metadata-action and using github.sha
+      - name: Get short sha
+        run: echo "GITHUB_SHA_SHORT="sha-"$(echo ${{ github.sha }} | cut -c -7)" >> $GITHUB_ENV
+
+      - name: Update image tag
+        run: |
+          cd ${{ env.WORKING_DIR }}
+          yq -i '${{ env.YAML_PROPERTY_PATH }} = "${{ env.GITHUB_SHA_SHORT }}"' ${{ env.TARGET_FILE }}
+    
+      - name: Commit and push update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update image tag for dev"
+          git push origin
