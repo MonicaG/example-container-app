@@ -71,8 +71,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pr=$(gh pr list \
-            --repo ${{ env.GITOPS_REPO }} \
-            --head ${{ env.BRANCH_NAME }} \ 
+            --repo '${{ env.GITOPS_REPO }}' \
+            --head '${{ env.BRANCH_NAME }}' \ 
             --base 'main' \
             --json number \
             --jq 'length')
