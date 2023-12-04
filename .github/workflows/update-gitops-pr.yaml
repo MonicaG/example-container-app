@@ -90,7 +90,7 @@ jobs:
           --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' \
           --assignee MonicaG \
           --label 'preview'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
