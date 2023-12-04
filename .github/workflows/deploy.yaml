@@ -21,10 +21,16 @@ jobs:
     needs: call-build-workflow
 
     steps:
+      - name: Setup gitops repo access
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}  
+
       - name: Checkout CD repo
         uses: actions/checkout@v4   
         with:
           repository: MonicaG/example-container-app-gitops
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
       # This assumes that sha was used as a tag in the above job 
       # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
