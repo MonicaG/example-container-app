@@ -65,17 +65,12 @@ jobs:
           git commit -am "Update image tag for dev"
           git push origin
 
-      - name: Check if PR existds
+      - name: Check if PR exists
         id: check_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pr=$(gh pr list \
-            --repo '${{ env.GITOPS_REPO }}' \
-            --head '${{ env.BRANCH_NAME }}' \ 
-            --base 'main' \
-            --json number \
-            --jq 'length')
+          pr=$(gh pr list --repo ${{ env.GITOPS_REPO }} --head ${{ env.BRANCH_NAME }} --base main --json number --jq 'length')
           if ((pr > 0)); then
             echo "EXISTS=true" >> "$GITHUB_OUTPUT"
             echo "PR exists"
