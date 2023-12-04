@@ -65,22 +65,25 @@ jobs:
           git push origin
 
       - name: Check if PR existds
-        id: check-pr
+        id: check_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pr=$(gh pr list \
-              --repo ${{ env.GITOPS_REPO }} \
-              --head ${{ env.BRANCH_NAME }} \ 
-              --base 'main' \
-              --json number \
-              --jq 'length')
+            --repo ${{ env.GITOPS_REPO }} \
+            --head ${{ env.BRANCH_NAME }} \ 
+            --base 'main' \
+            --json number \
+            --jq 'length')
           if ((pr > 0)); then
-              echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+            echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+            echo "PR exists"
+          else
+            echo "PR does NOT exist"
           fi
       
       - name: Create PR
-        if: !(steps.check-pr.outputs.EXISTS)
+        if: !(steps.check_pr.outputs.EXISTS)
         run: |
           gh pr create -B main -H $BRANCH_NAME --title 'Automated updates' --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' --assignee MonicaG --label 'preview'
         env:
