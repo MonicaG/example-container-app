@@ -14,11 +14,7 @@ on:
     
 jobs:
   call-build-workflow:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout
-        uses: MonicaG/example-container-app/.github/workflows/build.yaml@v1
+    uses: MonicaG/example-container-app/.github/workflows/build.yaml@v1
     
   update-gitops-file:
     runs-on: ubuntu-latest
