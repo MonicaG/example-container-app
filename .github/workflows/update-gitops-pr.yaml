@@ -34,6 +34,11 @@ jobs:
         with:
           repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          # fetch depth 0 gets all branches and histories. The workflow needs to get the
+          # branches because the workflow may run if there were multiple commits to the PR.
+          # It needs to checkout the existing branch and update it, rather than creating a 
+          # new branch and then getting an error when it pushes to the remote and sees there
+          # is an existing branch
           fetch-depth: 0
 
       # This assumes that sha was used as a tag in the above job 
@@ -60,15 +65,7 @@ jobs:
     
       - name: Commit and push update
         run: |
-          echo "Status before commit"
-          git status
           git commit -am "Update image tag for dev"
-          echo "status after commit"
-          git status
-          echo "Doing git fetch"
-          git fetch
-          echo "status after git fetch"
-          git status
           git push origin $BRANCH_NAME
 
       - name: Check if PR exists
@@ -93,10 +90,7 @@ jobs:
           -B main \
           -H $BRANCH_NAME \
           --title 'Automated updates' \
-          --body 'Automated update by Github workflow in ${{ github.repository }} for PR ${{ github.repository }}#${{ github.event.pull_request.number }} ' \
+          --body 'This PR was created automatically by a Github workflow in ${{ github.repository }}. It was created for PR ${{ github.repository }}#${{ github.event.pull_request.number }}. Closing that PR or removing the 'preview' label from it will automatically close this PR.' \
           --assignee MonicaG \
           --label 'preview'
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 

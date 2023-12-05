@@ -33,6 +33,14 @@ jobs:
           repository: MonicaG/example-container-app-gitops
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
 
+      
+      - name: 'Configure git'
+      # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+    
       # This assumes that sha was used as a tag in the above job 
       # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
       # of tags returned from metadata-action and using github.sha
@@ -46,7 +54,5 @@ jobs:
     
       - name: Commit and push update
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git commit -am "Update image tag for dev"
           git push origin
