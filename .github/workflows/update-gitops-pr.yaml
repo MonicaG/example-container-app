@@ -61,6 +61,7 @@ jobs:
       - name: Commit and push update
         run: |
           git commit -am "Update image tag for dev"
+          git status
           git push origin
 
       - name: Check if PR exists
