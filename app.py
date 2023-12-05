@@ -14,7 +14,7 @@ def hello():
 
 @app.route('/bye')
 def hello():
-    return '<h1><center>Goodbye!</center></h1>'
+    return '<h1><center>Goodbye! More changes!</center></h1>'
 
 @app.route('/test')
 def test():
