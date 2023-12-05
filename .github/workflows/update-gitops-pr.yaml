@@ -24,6 +24,9 @@ jobs:
       BRANCH_NAME: 'auto-updates-${{ github.event.pull_request.number }}'
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4   
+
       - name: Setup gitops repo access
         uses: webfactory/ssh-agent@v0.8.0
         with:
