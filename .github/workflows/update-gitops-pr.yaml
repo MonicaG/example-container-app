@@ -68,7 +68,7 @@ jobs:
           git commit -am "Update image tag for dev"
           echo "status after commit"
           git status
-          git push origin $BRANCH_NAME
+          git push 
 
       - name: Check if PR exists
         id: check_pr
