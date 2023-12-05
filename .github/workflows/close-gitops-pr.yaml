@@ -51,8 +51,8 @@ jobs:
           echo "${{ secrets.PR_PAT }}" > token.txt
           gh auth login --with-token < token.txt
           gh pr close $BRANCH_NAME \
-          --comment "This PR was automatically closed by a Github workflow in ${{ github.repository }}. It was closed because the associated PR in that repository was either closed or it's 'preview' label was removed."
-          --repo ${{ env.GITOPS_REPO }} 
+          --comment "This PR was automatically closed by a Github workflow in ${{ github.repository }}. It was closed because the associated PR in that repository was either closed or it's 'preview' label was removed." \
+          --repo ${{ env.GITOPS_REPO }} \
           --delete-branch
 
 
