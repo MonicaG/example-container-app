@@ -62,8 +62,20 @@ jobs:
         run: |
           cd ${{ env.WORKING_DIR }}
           yq -i '${{ env.YAML_PROPERTY_PATH }} = "${{ env.GITHUB_SHA_SHORT }}"' ${{ env.TARGET_FILE }}
-    
+
+      - name: 'Check for changes'
+        id: check_for_changes
+        run: |
+          CHANGES=$(git status --porcelain)
+          if [ -z "$CHANGES" ]; then
+              echo "No changes"
+              echo "HAS_CHANGES=0" >> $GITHUB_OUTPUT
+          else
+              echo "Has changes"
+              echo "HAS_CHANGES=1" >> $GITHUB_OUTPUT
+
       - name: Commit and push update
+        if: ${{ steps.check_for_changes.outputs.HAS_CHANGES == 1 }}
         run: |
           git commit -am "Update image tag for dev"
           git push origin $BRANCH_NAME
