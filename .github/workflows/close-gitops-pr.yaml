@@ -16,22 +16,6 @@ jobs:
       BRANCH_NAME: 'auto-updates-${{ github.event.pull_request.number }}'
 
     steps:
-
-      - name: Setup gitops repo access
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}  
-
-      - name: Checkout CD repo
-        uses: actions/checkout@v4   
-        with:
-          repository: ${{ env.GITOPS_REPO }}
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          # fetch-depth 0 gets all branches and history. This is needed because the workflow deletes 
-          # the branch in the step below. 
-          fetch-depth: 0
-
-
       - name: Check if PR exists
         id: check_pr
         env:
@@ -52,7 +36,6 @@ jobs:
           gh auth login --with-token < token.txt
           gh pr close $BRANCH_NAME \
           --comment "This PR was automatically closed by a Github workflow in ${{ github.repository }}. It was closed because the associated PR in that repository was either closed or it's 'preview' label was removed." \
-          --repo ${{ env.GITOPS_REPO }} \
-          --delete-branch
+          --repo ${{ env.GITOPS_REPO }} 
 
 
