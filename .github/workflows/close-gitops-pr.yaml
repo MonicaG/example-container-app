@@ -4,7 +4,7 @@ env:
   GITOPS_REPO: 'MonicaG/example-container-app-gitops'
 
 on:
-  pull_request:
+  pull_request_target:
     types: [unlabeled, closed]
     branches: [ "main" ]
   
