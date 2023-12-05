@@ -34,7 +34,7 @@ jobs:
         with:
           repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
 
       # This assumes that sha was used as a tag in the above job 
       # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
@@ -49,9 +49,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # - name: 'Create or checkout branch'
-      #   run: |
-      #     git checkout $BRANCH_NAME || git checkout -b $BRANCH_NAME        
+      - name: 'Create or checkout branch'
+        run: |
+          git checkout $BRANCH_NAME || git checkout -b $BRANCH_NAME        
 
       - name: Update image tag
         run: |
