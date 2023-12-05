@@ -46,7 +46,7 @@ jobs:
           fi
       
       - name: Close PR
-        if: '!(steps.check_pr.outputs.EXISTS)'
+        if: '(steps.check_pr.outputs.EXISTS)'
         run: |
           echo "${{ secrets.PR_PAT }}" > token.txt
           gh auth login --with-token < token.txt
