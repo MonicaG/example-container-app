@@ -46,10 +46,10 @@ jobs:
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: 'Create or checkout branch'
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME        
 
       - name: Update image tag
@@ -59,22 +59,15 @@ jobs:
     
       - name: Commit and push update
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git commit -am "Update image tag for dev"
           git push origin
 
-      - name: Check if PR existds
+      - name: Check if PR exists
         id: check_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pr=$(gh pr list \
-            --repo ${{ env.GITOPS_REPO }} \
-            --head ${{ env.BRANCH_NAME }} \ 
-            --base 'main' \
-            --json number \
-            --jq 'length')
+          pr=$(gh pr list --repo ${{ env.GITOPS_REPO }} --head ${{ env.BRANCH_NAME }} --base main --json number --jq 'length')
           if ((pr > 0)); then
             echo "EXISTS=true" >> "$GITHUB_OUTPUT"
             echo "PR exists"
@@ -83,10 +76,18 @@ jobs:
           fi
       
       - name: Create PR
-        if: !(steps.check_pr.outputs.EXISTS)
+        if: '!(steps.check_pr.outputs.EXISTS)'
         run: |
-          gh pr create -B main -H $BRANCH_NAME --title 'Automated updates' --body 'Automated update by Github workflow in $github.repository for PR $github.repository#$github.event.pull_request.number ' --assignee MonicaG --label 'preview'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "${{ secrets.PR_PAT }}" > token.txt
+          gh auth login --with-token < token.txt
+          gh pr create \
+          -B main \
+          -H $BRANCH_NAME \
+          --title 'Automated updates' \
+          --body 'Automated update by Github workflow in ${{ github.repository }} for PR ${{ github.repository }}#${{ github.event.pull_request.number }} ' \
+          --assignee MonicaG \
+          --label 'preview'
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
