@@ -10,7 +10,7 @@ def index():
 
 @app.route('/hello')
 def hello():
-    return '<h1><center>Hello! Bonjour! Salut!</center></h1>'
+    return '<h1><center>Hello! Bonjour! Salut! Hi!</center></h1>'
 
 @app.route('/test')
 def test():
