@@ -16,6 +16,10 @@ def hello():
 def hello():
     return '<h1><center>Goodbye!</center></h1>'
 
+@app.route('/what')
+def hello():
+    return '<h1><center>Huh?</center></h1>'
+
 @app.route('/test')
 def test():
     word = environ.get("APP_WORD")
