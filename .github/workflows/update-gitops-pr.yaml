@@ -11,12 +11,6 @@ on:
     types: [synchronize, reopened, labeled]
     branches: [ "main" ]
 
-# The workflow can sometimes be triggered twice by adding the label when the PR is created
-# If that happens cancel any running workflows and continue with this one    
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-  
 jobs:
   call-build-workflow:
     if: contains(github.event.pull_request.labels.*.name, 'preview') && github.event.pull_request.state == 'open'
