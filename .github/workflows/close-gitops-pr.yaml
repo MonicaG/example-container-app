@@ -36,10 +36,7 @@ jobs:
 
       - name: Delete branch in gitops
         run: |
-          git checkout ${{ env.BRANCH_NAME }}
-          git checkout main
-          git branch -d ${{ env.BRANCH_NAME }}
-          git push
+          git push origin --delete ${{ env.BRANCH_NAME }}
           
 
 
