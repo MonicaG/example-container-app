@@ -81,29 +81,32 @@ jobs:
           git commit -am "Update image tag for dev"
           git push origin $BRANCH_NAME
 
-      - name: Check if PR exists
-        id: check_pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pr=$(gh pr list --repo ${{ env.GITOPS_REPO }} --head ${{ env.BRANCH_NAME }} --base main --json number --jq 'length')
-          if ((pr > 0)); then
-            echo "EXISTS=true" >> "$GITHUB_OUTPUT"
-            echo "PR exists"
-          else
-            echo "PR does NOT exist"
-          fi
+      # - name: Check if PR exists
+      #   id: check_pr
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     pr=$(gh pr list --repo ${{ env.GITOPS_REPO }} --head ${{ env.BRANCH_NAME }} --base main --json number --jq 'length')
+      #     if ((pr > 0)); then
+      #       echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+      #       echo "PR exists"
+      #     else
+      #       echo "PR does NOT exist"
+      #     fi
+
+      # - name: Login to gh cli
+      #   run: |
+      #     echo "${{ secrets.PR_PAT }}" > token.txt
+      #     gh auth login --with-token < token.txt     
       
-      - name: Create PR
-        if: '!(steps.check_pr.outputs.EXISTS)'
-        run: |
-          echo "${{ secrets.PR_PAT }}" > token.txt
-          gh auth login --with-token < token.txt
-          gh pr create \
-          -B main \
-          -H $BRANCH_NAME \
-          --title 'Automated updates' \
-          --body 'This PR was created automatically by a Github workflow in ${{ github.repository }}. It was created for PR ${{ github.repository }}#${{ github.event.pull_request.number }}. Closing that PR or removing the 'preview' label from it will automatically close this PR.' \
-          --assignee MonicaG \
-          --label 'preview'
+      # - name: Create PR
+      #   if: '!(steps.check_pr.outputs.EXISTS)'
+      #   run: |
+      #     gh pr create \
+      #     -B main \
+      #     -H $BRANCH_NAME \
+      #     --title 'Automated updates' \
+      #     --body 'This PR was created automatically by a Github workflow in ${{ github.repository }}. It was created for PR ${{ github.repository }}#${{ github.event.pull_request.number }}. Closing that PR or removing the 'preview' label from it will automatically close this PR.' \
+      #     --assignee MonicaG \
+      #     --label 'preview'
 
