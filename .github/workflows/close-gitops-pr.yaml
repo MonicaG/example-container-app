@@ -28,7 +28,7 @@ jobs:
 
       - name: Delete branch in gitops
         run: |
-          branch_name=$(./.github/scripts/get-branch-name.yaml ${{ github.event.pull_request.number }})
+          branch_name=$(./.github/scripts/get-branch-name.sh ${{ github.event.pull_request.number }})
           git push origin --delete $branch_name
           
 

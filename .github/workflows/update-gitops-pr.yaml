@@ -46,7 +46,7 @@ jobs:
 
       - name: 'Get branch name'
         run: |
-          branch_name=$(./.github/scripts/get-branch-name.yaml ${{ github.event.pull_request.number }})
+          branch_name=$(./.github/scripts/get-short-sha.sh ${{ github.event.pull_request.number }})
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
       - name: 'Configure git'
