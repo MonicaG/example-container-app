@@ -9,8 +9,4 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-id=$1
-
-short_sha="sha-"$(echo $id | cut -c -7)"
-
-echo $short_sha
+echo "sha-"$(echo $1 | cut -c -7)

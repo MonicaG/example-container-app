@@ -5,8 +5,4 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-id=$1
-
-output="auto-updates/example-container-app-pr-$id"
-
-echo $output
+echo "auto-updates/example-container-app-pr-$1"
