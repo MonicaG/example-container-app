@@ -1,4 +1,4 @@
-name: Get short sha
+name: Get PR branch name
 
 on:
     workflow_call:
@@ -17,4 +17,3 @@ jobs:
         id: get_branch_name
         run: echo "BRANCH_NAME=auto-updates/example-container-app-pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
-        
