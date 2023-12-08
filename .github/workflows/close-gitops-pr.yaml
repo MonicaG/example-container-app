@@ -12,9 +12,7 @@ jobs:
   close-gitops-pr:
     if: ${{ (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) || ( github.event.action == 'unlabeled' && github.event.label.name == 'preview' ) }}
     runs-on: ubuntu-latest
-    env:
-      BRANCH_NAME: 'auto-updates-${{ github.event.pull_request.number }}'
-
+  
     steps:
       - name: Setup gitops repo access
         uses: webfactory/ssh-agent@v0.8.0
@@ -30,7 +28,8 @@ jobs:
 
       - name: Delete branch in gitops
         run: |
-          git push origin --delete ${{ env.BRANCH_NAME }}
+          branch_name=$(./.github/scripts/get-branch-name.yaml ${{ github.event.pull_request.number }})
+          git push origin --delete $branch_name
           
 
 

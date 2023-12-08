@@ -20,8 +20,6 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'preview') && github.event.pull_request.state == 'open'
     runs-on: ubuntu-latest
     needs: call-build-workflow
-    env:
-      BRANCH_NAME: 'auto-updates-${{ github.event.pull_request.number }}'
 
     steps:
       - name: Setup gitops repo access
@@ -41,11 +39,15 @@ jobs:
           # is an existing branch
           fetch-depth: 0
 
-      # This assumes that sha was used as a tag in the above job 
-      # See https://github.com/docker/metadata-action/issues/164 for discussion about the list
-      # of tags returned from metadata-action and using github.sha
       - name: Get short sha
-        run: echo "GITHUB_SHA_SHORT="sha-"$(echo ${{ github.sha }} | cut -c -7)" >> $GITHUB_ENV
+        run: 
+          short_name=$(./.github/scripts/get-short-sha.yaml ${{ github.sha }} )
+          echo "GITHUB_SHA_SHORT=$short_name" >> $GITHUB_ENV
+
+      - name: 'Get branch name'
+        run: |
+          branch_name=$(./.github/scripts/get-branch-name.yaml ${{ github.event.pull_request.number }})
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
       - name: 'Configure git'
       # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
@@ -54,9 +56,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+     
+
       - name: 'Create or checkout branch'
         run: |
-          git checkout $BRANCH_NAME || git checkout -b $BRANCH_NAME        
+          git checkout ${{ env.BRANCH_NAME }} || git checkout -b ${{ env.BRANCH_NAME }}       
 
       - name: Update image tag
         run: |
@@ -80,33 +84,3 @@ jobs:
         run: |
           git commit -am "Update image tag for dev"
           git push origin $BRANCH_NAME
-
-      # - name: Check if PR exists
-      #   id: check_pr
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     pr=$(gh pr list --repo ${{ env.GITOPS_REPO }} --head ${{ env.BRANCH_NAME }} --base main --json number --jq 'length')
-      #     if ((pr > 0)); then
-      #       echo "EXISTS=true" >> "$GITHUB_OUTPUT"
-      #       echo "PR exists"
-      #     else
-      #       echo "PR does NOT exist"
-      #     fi
-
-      # - name: Login to gh cli
-      #   run: |
-      #     echo "${{ secrets.PR_PAT }}" > token.txt
-      #     gh auth login --with-token < token.txt     
-      
-      # - name: Create PR
-      #   if: '!(steps.check_pr.outputs.EXISTS)'
-      #   run: |
-      #     gh pr create \
-      #     -B main \
-      #     -H $BRANCH_NAME \
-      #     --title 'Automated updates' \
-      #     --body 'This PR was created automatically by a Github workflow in ${{ github.repository }}. It was created for PR ${{ github.repository }}#${{ github.event.pull_request.number }}. Closing that PR or removing the 'preview' label from it will automatically close this PR.' \
-      #     --assignee MonicaG \
-      #     --label 'preview'
-
