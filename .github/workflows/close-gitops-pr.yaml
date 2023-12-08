@@ -17,11 +17,11 @@ jobs:
       - name: Check if this workflow should run
         id: should_run
         run: |
-          does_closed_pr_have_preview_label =  ${{ github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview') }}
-          was_preview_label_removed = ${{ github.event.action == 'unlabeled' && github.event.label.name == 'preview' }}
-          should_run = false
+          does_closed_pr_have_preview_label=${{ github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview') }}
+          was_preview_label_removed=${{ github.event.action == 'unlabeled' && github.event.label.name == 'preview' }}
+          should_run=false
           if $does_closed_pr_have_preview_label || was_preview_label_removed ; then
-            should_run = true
+            should_run=true
           fi
           echo "SHOULD_RUN=$should_run" >> "$GITHUB_OUTPUT"
 

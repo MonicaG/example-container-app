@@ -20,9 +20,9 @@ jobs:
       - name: Check if this workflow should run
         id: should_run
         run: |
-          should_run = false
+          should_run=false
           if ${{ contains(github.event.pull_request.labels.*.name, 'preview') && github.event.pull_request.state == 'open' }} ; then
-            should_run = true
+            should_run=true
           fi
           echo "SHOULD_RUN=$should_run" >> "$GITHUB_OUTPUT"
 
