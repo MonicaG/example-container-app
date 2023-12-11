@@ -28,22 +28,22 @@ jobs:
 
   call-build-workflow:
     needs: should-run
-    if: needs.should-run.outputs.SHOULD_RUN
+    if: needs.should-run.outputs.SHOULD_RUN == 'true'
     uses: ./.github/workflows/build.yaml
 
   get-short-sha:
     needs: should-run
-    if: needs.should-run.outputs.SHOULD_RUN
+    if: needs.should-run.outputs.SHOULD_RUN == 'true'
     uses: ./.github/workflows/get-short-sha.yaml
 
   get-pr-branch-name:
     needs: should-run
-    if: needs.should-run.outputs.SHOULD_RUN
+    if: needs.should-run.outputs.SHOULD_RUN == 'true'
     uses: ./.github/workflows/get-pr-branch-name.yaml
   
     
   update-gitops-pr-file:
-    if: needs.should-run.outputs.SHOULD_RUN
+    if: needs.should-run.outputs.SHOULD_RUN == 'true'
     runs-on: ubuntu-latest
     needs: [call-build-workflow, get-short-sha, get-pr-branch-name, should-run]
 
