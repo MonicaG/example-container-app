@@ -26,7 +26,7 @@ jobs:
           if ${{ github.event_name != 'pull_request' }}; then
             should_deploy=true
           fi
-          echo "SHOULD_DEPLOY=$should_run" >> "$GITHUB_OUTPUT"
+          echo "SHOULD_DEPLOY=$should_deploy" >> "$GITHUB_OUTPUT"
   call-build-workflow:
     uses: ./.github/workflows/build.yaml
 
