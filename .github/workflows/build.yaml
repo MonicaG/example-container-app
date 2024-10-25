@@ -7,13 +7,16 @@ env:
 on:
     workflow_call:
 jobs:
+  get-short-sha:
+    uses: ./.github/workflows/get-short-sha.yaml
   build:
+    needs: [get-short-sha]
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-    
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -59,7 +62,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ github.sha }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ needs.get-short-sha.outputs.SHORT_SHA }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           vuln-type: 'os,library'
