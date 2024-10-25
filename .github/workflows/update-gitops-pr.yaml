@@ -49,7 +49,7 @@ jobs:
           fi
   call-build-workflow:
     needs: [get-build-mode, get-short-sha]
-    if: ${{ (needs.get-build-mode.outputs.SHOULD_BUILD == 'true') || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true') }}
+    if: ${{ (needs.get-build-mode.outputs.SHOULD_BUILD) || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY) }}
     uses: ./.github/workflows/build.yaml
     with:
       short-sha: ${{needs.get-short-sha.outputs.SHORT_SHA}}
