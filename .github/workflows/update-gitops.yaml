@@ -15,7 +15,10 @@ on:
     
 jobs:
   call-build-workflow:
+    needs: [get-short-sha]
     uses: ./.github/workflows/build.yaml
+    with:
+      short-sha: ${{needs.get-short-sha.outputs.SHORT_SHA}}
 
   get-short-sha:
     uses: ./.github/workflows/get-short-sha.yaml
