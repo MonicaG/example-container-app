@@ -2,7 +2,7 @@ name: Build Image
 
 env:
   REGISTRY: ghcr.io
-  REPOSITORY_NAME: ${{ github.repository_owner }}/example-container-app/app
+  REPOSITORY_NAME: monicag/example-container-app/app
 
 on:
     workflow_call:
