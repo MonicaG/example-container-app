@@ -1,7 +1,7 @@
 name: Trivy scan
 
 on:
-  package:
+  registry_package:
     types: [updated]
 jobs:
   should-run:
@@ -10,7 +10,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: '${{github.event.package.registry.url}}/${{github.event.package.name}}:${{github.event.package.package_version.tag_name}}'
+          image-ref: '${{github.event.registry_package.registry.url}}/${{github.event.registry_package.name}}:${{github.event.registry_package.package_version.tag_name}}'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
