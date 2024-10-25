@@ -14,31 +14,14 @@ on:
   workflow_dispatch:
     
 jobs:
-  should-deploy:
-    runs-on: ubuntu-latest
-    outputs:
-      SHOULD_DEPLOY: ${{ steps.should_deploy.outputs.SHOULD_DEPLOY }}
-    steps:
-      - name: Check if this workflow should deploy
-        id: should_deploy
-        run: |
-          should_deploy=false
-          if ${{ github.event_name != 'pull_request' }}; then
-            should_deploy=true
-          fi
-          echo "SHOULD_DEPLOY=$should_deploy" >> "$GITHUB_OUTPUT"
   call-build-workflow:
     uses: ./.github/workflows/build.yaml
 
   get-short-sha:
-    if: needs.should-deploy.outputs.SHOULD_DEPLOY == 'true'
     uses: ./.github/workflows/get-short-sha.yaml
-    needs: [should-deploy]
     
   update-gitops-file:
-    if: needs.should-deploy.outputs.SHOULD_DEPLOY == 'true'
     runs-on: ubuntu-latest
-    needs: [call-build-workflow, get-short-sha, should-deploy]
 
     steps:
       
