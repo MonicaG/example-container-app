@@ -42,7 +42,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         
       - name: Build container
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
@@ -51,4 +51,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }} 
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          labels: "testing labels"
 
