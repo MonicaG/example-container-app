@@ -1,4 +1,4 @@
-name: Build and update gitops repo for pr
+name: Build and optionally update gitops repo for a PR
 
 env:
   TARGET_FILE: 'values.pr.yaml'
