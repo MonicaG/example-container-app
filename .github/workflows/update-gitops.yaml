@@ -22,6 +22,7 @@ jobs:
     
   update-gitops-file:
     runs-on: ubuntu-latest
+    needs: [get-short-sha, call-build-workflow]
 
     steps:
       
