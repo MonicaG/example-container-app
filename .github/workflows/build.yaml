@@ -54,8 +54,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }} 
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          labels: |
-            org.opencontainers.image.desciption="Built from ${{github.ref_name}}"
+          annotations: |
+            org.opencontainers.image.ref.name=${{github.ref_name}}
             org.opencontainers.image.created=${{ steps.build.outputs.timestamp }}
             org.opencontainers.image.source=${{github.repositoryUrl}}
 
