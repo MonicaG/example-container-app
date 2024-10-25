@@ -42,6 +42,11 @@ jobs:
         run: |
           echo " should build ${{needs.get-build-mode.outputs.SHOULD_BUILD}} "
           echo " should build deploy ${{needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY}}"
+          if ${{ (needs.get-build-mode.outputs.SHOULD_BUILD == 'true') || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true') }} ; then
+            echo "in if statement"
+          else
+            echo "did not work"
+          fi
   call-build-workflow:
     needs: [get-build-mode, get-short-sha]
     if: ${{ (needs.get-build-mode.outputs.SHOULD_BUILD == 'true') || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true') }}
