@@ -2,7 +2,6 @@ name: Trivy scan
 
 on:
   registry_package:
-    types: [updated]
 jobs:
   should-run:
     runs-on: ubuntu-latest
