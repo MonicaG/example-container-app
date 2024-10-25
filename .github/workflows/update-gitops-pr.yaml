@@ -34,6 +34,14 @@ jobs:
           echo "SHOULD_BUILD_DEPLOY=$should_build_deploy" >> "$GITHUB_OUTPUT"
         
 
+  debug:
+    needs: [get-build-mode]         
+    runs-on: ubuntu-latest
+    steps:
+      - name: debug-values
+        run: |
+          echo " should build ${{needs.get-build-mode.outputs.SHOULD_BUILD}}
+          echo " should build deploy ${{needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY}}"
   call-build-workflow:
     needs: [get-build-mode, get-short-sha]
     if: needs.get-build-mode.outputs.SHOULD_BUILD == 'true' || needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true'
