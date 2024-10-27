@@ -76,8 +76,6 @@ jobs:
       short-sha: ${{needs.get-short-sha.outputs.SHORT_SHA}}
 
   get-short-sha:
-    needs: [get-build-mode]
-    if: needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true'
     uses: ./.github/workflows/get-short-sha.yaml
 
   get-pr-branch-name:
