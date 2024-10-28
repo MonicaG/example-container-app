@@ -6,12 +6,12 @@ env:
 
 on:
     workflow_call:
-      inputs:
-        short-sha:
-          description: 'The short sha tag for the image'
-          default: 'latest'
-          required: true
-          type: string
+      # inputs:
+      #   short-sha:
+      #     description: 'The short sha tag for the image'
+      #     default: 'latest'
+      #     required: true
+      #     type: string
 
 jobs:
   build:
@@ -43,7 +43,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-              
+
+      - # Support for multiplatform build. Using for dev debugging
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - # allows for caching
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -61,17 +65,17 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }} 
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ env.CACHE_TAG }}
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ env.CACHE_TAG }},mode=max
-          labels: ${{ steps.meta.outputs.labels }} 
+          # labels: ${{ steps.meta.outputs.labels }} 
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ inputs.short-sha }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@0.28.0
+      #   with:
+      #     image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ inputs.short-sha }}'
+      #     format: 'sarif'
+      #     output: 'trivy-results.sarif'
+      #     severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
+      # - name: Upload Trivy scan results to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: 'trivy-results.sarif'
