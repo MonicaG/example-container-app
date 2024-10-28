@@ -36,7 +36,7 @@ jobs:
           echo "SHOULD_BUILD_DEPLOY=$should_build_deploy" >> "$GITHUB_OUTPUT"
 
   call-build-workflow:
-    needs: get-build-mode
+    needs: [get-build-mode]
     if: ${{ (needs.get-build-mode.outputs.SHOULD_BUILD) || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY) }}
     uses: ./.github/workflows/build.yaml
 
