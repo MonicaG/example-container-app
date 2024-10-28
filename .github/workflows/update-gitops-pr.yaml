@@ -18,7 +18,8 @@ jobs:
       SHOULD_BUILD: ${{ steps.build_mode.outputs.SHOULD_BUILD }}
       SHOULD_BUILD_DEPLOY: ${{ steps.build_mode.outputs.SHOULD_BUILD_DEPLOY }}
     steps:
-      - name: Check if this workflow should build and deploy. Deployment cannot happen without a build 
+      # Check if this workflow should build and optionally deploy. Deployment cannot happen without a build
+      - name: Determine if should build and deploy
         id: build_mode
         run: |
           should_build=false
@@ -33,13 +34,12 @@ jobs:
           fi
           echo "SHOULD_BUILD=$should_build" >> "$GITHUB_OUTPUT"
           echo "SHOULD_BUILD_DEPLOY=$should_build_deploy" >> "$GITHUB_OUTPUT"
-           
-          
+
   call-build-workflow:
-    needs: [get-build-mode]
+    needs: get-build-mode
     if: ${{ (needs.get-build-mode.outputs.SHOULD_BUILD) || (needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY) }}
     uses: ./.github/workflows/build.yaml
-   
+
   get-short-sha:
     needs: [get-build-mode]
     if: needs.get-build-mode.outputs.SHOULD_BUILD_DEPLOY == 'true'
