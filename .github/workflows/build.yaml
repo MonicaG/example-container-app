@@ -6,13 +6,7 @@ env:
 
 on:
     workflow_call:
-      # inputs:
-      #   short-sha:
-      #     description: 'The short sha tag for the image'
-      #     default: 'latest'
-      #     required: true
-      #     type: string
-
+     
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +17,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}
           # Always generate latest tag (https://github.com/docker/metadata-action#latest-tag)
@@ -32,6 +26,7 @@ jobs:
           tags: |
             type=sha
             type=ref,event=pr 
+            type=ref,raw=${{github.ref_name}}
           labels: |
             org.opencontainers.image.ref.name=${{github.ref_name}}
             org.opencontainers.image.source=${{github.repositoryUrl}}
@@ -70,15 +65,15 @@ jobs:
             org.opencontainers.image.source=${{github.repositoryUrl}}
             org.opencontainers.image.description="Build from ${{github.ref_name}}"
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@0.28.0
-      #   with:
-      #     image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ inputs.short-sha }}'
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
-      #     severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}:${{ steps.meta.outputs.version }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
 
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
