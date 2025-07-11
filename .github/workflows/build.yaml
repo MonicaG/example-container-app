@@ -26,7 +26,7 @@ jobs:
           tags: |
             type=sha
             type=ref,event=pr 
-            type=ref,raw=${{github.ref_name}}
+            type=raw,value=${{github.ref_name}}
           labels: |
             org.opencontainers.image.ref.name=${{github.ref_name}}
             org.opencontainers.image.source=${{github.repositoryUrl}}
